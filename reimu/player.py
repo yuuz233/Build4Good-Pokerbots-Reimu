@@ -35,16 +35,24 @@ class Player(Bot):
         self.aggression_factor = 1.0  # Dynamic aggression adjustment
 
     def _calculate_strength(self, hole, board, iters=200):
-        deck = eval7.Deck()
-        hole_cards = [eval7.Card(card) for card in hole]
-        
-        for card in hole_cards + board:
-            deck.cards.remove(card)
-            
         wins = 0
         for _ in range(iters):
+            # Create new deck for each simulation
+            deck = eval7.Deck()
+            hole_cards = [eval7.Card(card) for card in hole]
+            
+            # Remove known cards
+            for card in hole_cards + board:
+                try:
+                    deck.cards.remove(card)
+                except ValueError:
+                    pass  # Handle community cards already removed
+            
             deck.shuffle()
+            
+            # Deal 3 cards for opponent (3-card hold'em)
             opponent_hole = deck.deal(3)
+            # Deal community cards (total 5 including existing board)
             remaining_community = deck.deal(5 - len(board))
             
             our_hand = hole_cards + board + remaining_community
@@ -77,6 +85,9 @@ class Player(Bot):
         Returns:
         Nothing.
         '''
+        round_num = game_state.round_num + 1  # Rounds are 0-indexed
+        total_rounds = NUM_ROUNDS
+        print(f"🏁 Round {round_num}/{total_rounds} | My stack: {round_state.stacks[active]} | Opponent stack: {round_state.stacks[1-active]}")
         street = 'preflop' if round_state.street == 0 else \
                 'flop' if round_state.street == 3 else 'turn'
         if round_state.button != active:  # Track opponent's previous action
@@ -97,12 +108,20 @@ class Player(Bot):
         Returns:
         Nothing.
         '''
-        #my_delta = terminal_state.deltas[active]  # your bankroll change from this round
-        previous_state = terminal_state.previous_state  # RoundState before payoffs
-        #street = previous_state.street  # 0, 3, 4, or 5 representing when this round ended
-        #my_cards = previous_state.hands[active]  # your cards
-        #opp_cards = previous_state.hands[1-active]  # opponent's cards or [] if not revealed
-        pass
+        # Add this before the cleanup logic
+        my_delta = terminal_state.deltas[active]
+        print(f"📊 Round Result: {'+' if my_delta > 0 else ''}{my_delta} | Total Bankroll: {game_state.bankrolls[active]}")
+        # Add connection cleanup logic
+        try:
+            # Reset any network-related state
+            self.opponent_stats = {stage: {'raises':0, 'calls':0, 'folds':0} 
+                                 for stage in ['preflop', 'flop', 'turn']}
+            self.aggression_factor = 1.0
+            # Mimic all_in_bot's simple round termination
+            if terminal_state.previous_state.street == 5:  # River reached
+                return CheckAction()
+        except Exception as e:
+            pass  # Silent cleanup like all_in_bot
 
     def get_action(self, game_state, round_state, active):
         '''
