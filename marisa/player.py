@@ -32,14 +32,13 @@ class Player(Bot):
             'turn': {'raises': 0, 'calls': 0, 'folds': 0}
         }
         self.hand_strengths = []
-        self.aggression_factor = 1.0  # Dynamic aggression adjustment
-        # REIMU'S PARAMETERS
-        self.strength_iters = 200
-        self.aggression_base = 1.0
-        self.bluff_threshold = 0.4
-        self.bluff_base = 0.3
-        self.bluff_scale = 0.5
-        self.pot_odds_multiplier = 1.2
+        # MARISA'S PARAMETERS
+        self.strength_iters = 300  # More precise simulations
+        self.aggression_base = 1.2  # Higher base aggression
+        self.bluff_threshold = 0.35  # Bluff more often
+        self.bluff_base = 0.4  # Higher base bluff chance
+        self.bluff_scale = 0.6  # More responsive to fold probability
+        self.pot_odds_multiplier = 1.5  # Riskier calls
 
     def _calculate_strength(self, hole, board, iters=200):
         wins = 0
@@ -117,7 +116,6 @@ class Player(Bot):
             # Reset any network-related state
             self.opponent_stats = {stage: {'raises':0, 'calls':0, 'folds':0} 
                                  for stage in ['preflop', 'flop', 'turn']}
-            self.aggression_factor = 1.0
             # Mimic all_in_bot's simple round termination
             if terminal_state.previous_state.street == 5:  # River reached
                 return CheckAction()
@@ -150,7 +148,7 @@ class Player(Bot):
         fold_prob = self.opponent_stats[street]['folds'] / total_actions if total_actions > 0 else 0.3
         
         # Dynamic aggression adjustment
-        self.aggression_factor = 1.0 + (0.5 - fold_prob) * 2
+        self.aggression_factor = self.aggression_base + (0.5 - fold_prob) * 2
         
         if RaiseAction in legal_actions:
             min_raise, max_raise = round_state.raise_bounds()
