@@ -26,6 +26,8 @@ The only code you need to edit is the player.py class inside the bot folder. You
 
 There is a special bot, player_chatbot, that is provided which allows you to play against your own bot using a command line interface. This can be used for debugging purposes. 
 
+You can use numpy/numba, but any other external Python libraries **are not allowed**!
+
 If your pokerbot attempts to tamper with the game engine/judging system in any way, your team will be **immidiately disqualified**.  
 
 ## Dependencies
