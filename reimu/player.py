@@ -85,9 +85,6 @@ class Player(Bot):
         Returns:
         Nothing.
         '''
-        round_num = game_state.round_num + 1  # Rounds are 0-indexed
-        total_rounds = NUM_ROUNDS
-        print(f"🏁 Round {round_num}/{total_rounds} | My stack: {round_state.stacks[active]} | Opponent stack: {round_state.stacks[1-active]}")
         street = 'preflop' if round_state.street == 0 else \
                 'flop' if round_state.street == 3 else 'turn'
         if round_state.button != active:  # Track opponent's previous action
@@ -108,9 +105,6 @@ class Player(Bot):
         Returns:
         Nothing.
         '''
-        # Add this before the cleanup logic
-        my_delta = terminal_state.deltas[active]
-        print(f"📊 Round Result: {'+' if my_delta > 0 else ''}{my_delta} | Total Bankroll: {game_state.bankrolls[active]}")
         # Add connection cleanup logic
         try:
             # Reset any network-related state

@@ -503,7 +503,9 @@ class Game():
         '''
         Runs one game of poker.
         '''
-        print('Starting the Pokerbots engine...')
+        print(f'🏆 Competition Started | Total Rounds: {NUM_ROUNDS}')
+        start_time = time.time()
+        
         players = [
             Player(PLAYER_1_NAME, PLAYER_1_PATH),
             Player(PLAYER_2_NAME, PLAYER_2_PATH)
@@ -513,10 +515,20 @@ class Game():
         for player in players:
             player.run()
         for round_num in range(1, NUM_ROUNDS + 1):
+            elapsed = time.time() - start_time
+            remaining = (NUM_ROUNDS - round_num) * (elapsed / round_num) if round_num > 0 else 0
+            print(f'\n🌀 Round {round_num}/{NUM_ROUNDS} | Elapsed: {elapsed:.1f}s | Est. Remain: {remaining:.1f}s')
+            
             self.log.append('')
             self.log.append('Round #' + str(round_num) + STATUS(players))
             self.run_round(players)
             self.log.append('Winning counts at the end of the round: ' + STATUS(players))
+
+            # Add progress bar
+            progress = round_num / NUM_ROUNDS
+            bar_length = 40
+            bar = '█' * int(bar_length * progress) + '-' * (bar_length - int(bar_length * progress))
+            print(f'[{bar}] {progress:.0%}')
 
             players = players[::-1]
         self.log.append('')
