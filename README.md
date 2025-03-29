@@ -1,6 +1,8 @@
 # Pokerbots Reimu
 
-A poker bot implementation for Build4Good.
+![Reimu](https://static.zerochan.net/Hakurei.Reimu.full.3596890.png)
+
+A poker bot implementation for Build4Good. All copyright of art belonged to ZUN. Long live Hakurei Reimu!
 
 ## Setup Instructions
 

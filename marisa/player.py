@@ -9,6 +9,8 @@ from skeleton.runner import parse_args, run_bot
 
 import eval7
 import random
+import json
+import argparse
 
 
 class Player(Bot):
@@ -26,6 +28,16 @@ class Player(Bot):
         Returns:
         Nothing.
         '''
+        # Get parameters from command line
+        parser = argparse.ArgumentParser()
+        parser.add_argument('--aggression', type=float, default=1.2)
+        parser.add_argument('--bluff_threshold', type=float, default=0.35)
+        parser.add_argument('--pot_multiplier', type=float, default=1.5)
+        args, _ = parser.parse_known_args()
+        
+        self.aggression_base = args.aggression
+        self.bluff_threshold = args.bluff_threshold
+        self.pot_odds_multiplier = args.pot_multiplier
         self.opponent_stats = {
             'preflop': {'raises': 0, 'calls': 0, 'folds': 0},
             'flop': {'raises': 0, 'calls': 0, 'folds': 0},
@@ -34,11 +46,8 @@ class Player(Bot):
         self.hand_strengths = []
         # MARISA'S PARAMETERS
         self.strength_iters = 300  # More precise simulations
-        self.aggression_base = 1.2  # Higher base aggression
-        self.bluff_threshold = 0.35  # Bluff more often
         self.bluff_base = 0.4  # Higher base bluff chance
         self.bluff_scale = 0.6  # More responsive to fold probability
-        self.pot_odds_multiplier = 1.5  # Riskier calls
 
     def _calculate_strength(self, hole, board, iters=200):
         wins = 0

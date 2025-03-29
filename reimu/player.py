@@ -32,15 +32,16 @@ class Player(Bot):
             'turn': {'raises': 0, 'calls': 0, 'folds': 0}
         }
         self.hand_strengths = []
-        self.aggression_factor = 1.0  # Dynamic aggression adjustment
-        # REIMU'S PARAMETERS
-        self.strength_iters = 200
-        self.aggression_base = 1.0
-        self.bluff_threshold = 0.4
+        # OPTIMIZED FROM BATCH RESULTS (1.0-1.2 aggression, 0.3-0.35 bluff)
+        self.aggression_factor = 1.0
+        self.aggression_base = 1.1  # Linear interpolation between 1.0 and 1.2
+        self.bluff_threshold = 0.325  # Midpoint of 0.3 and 0.35
         self.bluff_base = 0.3
         self.bluff_scale = 0.5
-        self.pot_odds_multiplier = 1.2
-
+        self.pot_odds_multiplier = 1.6  # Between best 1.2 and runner-up 2.0
+        # REIMU'S PARAMETERS
+        self.strength_iters = 200
+ 
     def _calculate_strength(self, hole, board, iters=200):
         wins = 0
         for _ in range(iters):
